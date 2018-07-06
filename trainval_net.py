@@ -58,7 +58,7 @@ def parse_args():
                       default=10000, type=int)
 
   parser.add_argument('--save_dir', dest='save_dir',
-                      help='directory to save models', default="/srv/share/jyang375/models",
+                      help='directory to save models', default="./save",
                       type=str)
   parser.add_argument('--nw', dest='num_workers',
                       help='number of worker to load data',
@@ -323,7 +323,8 @@ if __name__ == '__main__':
 
       loss = rpn_loss_cls.mean() + rpn_loss_box.mean() \
            + RCNN_loss_cls.mean() + RCNN_loss_bbox.mean()
-      loss_temp += loss.data[0]
+      loss_temp += loss.data.item()
+      # import pdb; pdb.set_trace()
 
       # backward
       optimizer.zero_grad()
@@ -338,17 +339,17 @@ if __name__ == '__main__':
           loss_temp /= args.disp_interval
 
         if args.mGPUs:
-          loss_rpn_cls = rpn_loss_cls.mean().data[0]
-          loss_rpn_box = rpn_loss_box.mean().data[0]
-          loss_rcnn_cls = RCNN_loss_cls.mean().data[0]
-          loss_rcnn_box = RCNN_loss_bbox.mean().data[0]
+          loss_rpn_cls = rpn_loss_cls.mean().data.item()
+          loss_rpn_box = rpn_loss_box.mean().data.item()
+          loss_rcnn_cls = RCNN_loss_cls.mean().data.item()
+          loss_rcnn_box = RCNN_loss_bbox.mean().data.item()
           fg_cnt = torch.sum(rois_label.data.ne(0))
           bg_cnt = rois_label.data.numel() - fg_cnt
         else:
-          loss_rpn_cls = rpn_loss_cls.data[0]
-          loss_rpn_box = rpn_loss_box.data[0]
-          loss_rcnn_cls = RCNN_loss_cls.data[0]
-          loss_rcnn_box = RCNN_loss_bbox.data[0]
+          loss_rpn_cls = rpn_loss_cls.data.item()
+          loss_rpn_box = rpn_loss_box.data.item()
+          loss_rcnn_cls = RCNN_loss_cls.data.item()
+          loss_rcnn_box = RCNN_loss_bbox.data.item()
           fg_cnt = torch.sum(rois_label.data.ne(0))
           bg_cnt = rois_label.data.numel() - fg_cnt
 
